@@ -2,8 +2,13 @@
 #include <iostream>
 #include <format>
 int main() {
+    /*
     const float a = 1.0f;
     float b = 0x1p-24+0x1p-25;
+    */
+
+    const float a = 1.0f + 0x1p-23;
+    const float b = 0x1p-24;
 
     float c = a+b;
 
