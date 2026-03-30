@@ -6,6 +6,10 @@ if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
 endif()
 
+add_library(nc-compile-options INTERFACE)
+target_compile_features(nc-compile-options INTERFACE cxx_std_23)
+target_compile_options(nc-compile-options INTERFACE -Wall -Wextra -Werror)
+
 find_package(benchmark QUIET)
 
 if (NOT benchmark_FOUND)
@@ -44,10 +48,12 @@ else()
 endif()
 
 add_library(MyVector_dot src/MyVector_dot.cpp)
+target_link_libraries(MyVector_dot PRIVATE nc-compile-options)
 target_include_directories(MyVector_dot PUBLIC include/)
 
 add_library(MyVector_dot_fma src/MyVector_dot_fma.cpp)
 target_include_directories(MyVector_dot_fma PUBLIC include/)
+target_link_libraries(MyVector_dot_fma PRIVATE nc-compile-options)
 target_compile_options(MyVector_dot_fma PRIVATE -mavx2 -mfma)
 
 add_library(MyVector INTERFACE)
@@ -55,4 +61,4 @@ target_link_libraries(MyVector INTERFACE MyVector_dot MyVector_dot_fma)
 target_include_directories(MyVector INTERFACE include/)
 
 add_executable(main src/main.cpp)
-target_link_libraries(main MyVector benchmark::benchmark)
+target_link_libraries(main nc-compile-options MyVector benchmark::benchmark)
