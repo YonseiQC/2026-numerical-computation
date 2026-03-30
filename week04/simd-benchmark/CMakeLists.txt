@@ -10,6 +10,7 @@ add_library(nc-compile-options INTERFACE)
 target_compile_features(nc-compile-options INTERFACE cxx_std_23)
 target_compile_options(nc-compile-options INTERFACE -Wall -Wextra -Werror)
 
+find_package(OpenMP REQUIRED)
 find_package(benchmark QUIET)
 
 if (NOT benchmark_FOUND)
@@ -60,5 +61,9 @@ add_library(MyVector INTERFACE)
 target_link_libraries(MyVector INTERFACE MyVector_dot MyVector_dot_fma)
 target_include_directories(MyVector INTERFACE include/)
 
+add_library(matrix_vector_product src/matrix_vector_prod.cpp)
+target_link_libraries(matrix_vector_product PRIVATE nc-compile-options OpenMP::OpenMP_CXX)
+target_include_directories(matrix_vector_product PRIVATE include/)
+
 add_executable(main src/main.cpp)
-target_link_libraries(main nc-compile-options MyVector benchmark::benchmark)
+target_link_libraries(main nc-compile-options MyVector matrix_vector_product benchmark::benchmark)

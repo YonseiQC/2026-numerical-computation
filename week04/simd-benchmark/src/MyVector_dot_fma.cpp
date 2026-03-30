@@ -43,6 +43,6 @@ double dot_fma_unroll(const MyVectorDouble& vec1, const MyVectorDouble& vec2) {
 	}
 	__m256d res = _mm256_add_pd(res0, res1);
 	double val[4];
-	_mm256_store_pd(static_cast<double*>(val), res);
+	_mm256_storeu_pd(static_cast<double*>(val), res);
 	return val[0] + val[1] + val[2] + val[3];
 }

@@ -12,7 +12,7 @@ struct MyMatrix {
     size_t cols_;
     double* data_;
 
-    MyMatrix(size_t rows, size_t cols) {
+    MyMatrix(size_t rows, size_t cols) : rows_{rows}, cols_{cols} {
         data_ = new double[rows*cols];
     }
 
@@ -72,3 +72,15 @@ MyVectorDouble matrix_vector_prod(const MyMatrix<order>& mat, const MyVectorDoub
 
     return res;
 }
+
+template<Order order>
+MyVectorDouble matrix_vector_prod_omp1(const MyMatrix<order>& mat, const MyVectorDouble& vec);
+
+template<Order order>
+MyVectorDouble matrix_vector_prod_omp2(const MyMatrix<order>& mat, const MyVectorDouble& vec);
+
+// Explicit instantiation
+extern template MyVectorDouble matrix_vector_prod_omp1<Order::RowMajor>(const MyMatrix<Order::RowMajor>&, const MyVectorDouble&);
+extern template MyVectorDouble matrix_vector_prod_omp1<Order::ColMajor>(const MyMatrix<Order::ColMajor>&, const MyVectorDouble&);
+extern template MyVectorDouble matrix_vector_prod_omp2<Order::RowMajor>(const MyMatrix<Order::RowMajor>&, const MyVectorDouble&);
+extern template MyVectorDouble matrix_vector_prod_omp2<Order::ColMajor>(const MyMatrix<Order::ColMajor>&, const MyVectorDouble&);
