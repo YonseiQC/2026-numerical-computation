@@ -43,9 +43,16 @@ else()
     message(STATUS "GBenchmark found.")
 endif()
 
-add_library(MyVector src/MyVector.cpp)
-target_include_directories(MyVector PUBLIC include/)
-target_compile_options(MyVector PRIVATE -mavx2 -mfma)
+add_library(MyVector_dot src/MyVector_dot.cpp)
+target_include_directories(MyVector_dot PUBLIC include/)
+
+add_library(MyVector_dot_fma src/MyVector_dot_fma.cpp)
+target_include_directories(MyVector_dot_fma PUBLIC include/)
+target_compile_options(MyVector_dot_fma PRIVATE -mavx2 -mfma)
+
+add_library(MyVector INTERFACE)
+target_link_libraries(MyVector INTERFACE MyVector_dot MyVector_dot_fma)
+target_include_directories(MyVector INTERFACE include/)
 
 add_executable(main src/main.cpp)
 target_link_libraries(main MyVector benchmark::benchmark)

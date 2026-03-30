@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <immintrin.h>
 #include <random>
+#include <functional>
+#include <cpuid.h>
+
 
 struct MyVectorDouble {
 	double* p_;
@@ -69,3 +72,18 @@ template<typename RandomEngine> MyVectorDouble random_vector(RandomEngine& re, s
 double dot(const MyVectorDouble& vec1, const MyVectorDouble& vec2);
 double dot_fma(const MyVectorDouble& vec1, const MyVectorDouble& vec2);
 double dot_fma_unroll(const MyVectorDouble& vec1, const MyVectorDouble& vec2);
+
+inline static std::function<double(const MyVectorDouble&, const MyVectorDouble&)> dot_function = []() {
+	unsigned int eax = 0;
+	unsigned int ebx = 0;
+	unsigned int ecx = 0;
+	unsigned int edx = 0;
+	__get_cpuid(1, &eax, &ebx, &ecx, &edx);
+
+	bool fma = (ecx & (1U << 12));
+
+	if(fma) {
+		return dot_fma;
+	}
+	return dot;
+}();
