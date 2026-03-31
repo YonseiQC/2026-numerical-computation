@@ -1,12 +1,11 @@
 #pragma once
 #include <algorithm>
 #include <cassert>
+#include <cpuid.h>
 #include <cstdlib>
+#include <functional>
 #include <immintrin.h>
 #include <random>
-#include <functional>
-#include <cpuid.h>
-
 
 struct MyVectorDouble {
 	double* p_;
@@ -60,7 +59,8 @@ struct MyVectorDouble {
 	~MyVectorDouble() { std::free(p_); }
 };
 
-template<typename RandomEngine> MyVectorDouble random_vector(RandomEngine& re, size_t size) {
+template<typename RandomEngine>
+MyVectorDouble random_vector(RandomEngine& re, size_t size) {
 	std::normal_distribution<double> ndist;
 	MyVectorDouble res(size);
 	for(size_t i = 0; i < size; i++) {
@@ -73,17 +73,19 @@ double dot(const MyVectorDouble& vec1, const MyVectorDouble& vec2);
 double dot_fma(const MyVectorDouble& vec1, const MyVectorDouble& vec2);
 double dot_fma_unroll(const MyVectorDouble& vec1, const MyVectorDouble& vec2);
 
-inline static std::function<double(const MyVectorDouble&, const MyVectorDouble&)> dot_function = []() {
-	unsigned int eax = 0;
-	unsigned int ebx = 0;
-	unsigned int ecx = 0;
-	unsigned int edx = 0;
-	__get_cpuid(1, &eax, &ebx, &ecx, &edx);
+inline static std::function<double(const MyVectorDouble&,
+                                   const MyVectorDouble&)>
+	dot_function = []() {
+		unsigned int eax = 0;
+		unsigned int ebx = 0;
+		unsigned int ecx = 0;
+		unsigned int edx = 0;
+		__get_cpuid(1, &eax, &ebx, &ecx, &edx);
 
-	bool fma = (ecx & (1U << 12));
+		bool fma = (ecx & (1U << 12));
 
-	if(fma) {
-		return dot_fma;
-	}
-	return dot;
-}();
+		if(fma) {
+			return dot_fma;
+		}
+		return dot;
+	}();
