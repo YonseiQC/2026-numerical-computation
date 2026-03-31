@@ -8,7 +8,7 @@ int main() {
 	unsigned int ecx = 0;
 	unsigned int edx = 0;
 
-	__get_cpuid(0x00, &eax, &ebx, &ecx, &edx); // supported in GCC and clang
+	__get_cpuid(/* calling eax = */0x00, &eax, &ebx, &ecx, &edx); // supported in GCC and clang
 
 	const auto nids = eax; // This is now the highest parameter CPU supports
 	std::string vendor;
@@ -26,7 +26,7 @@ int main() {
 	std::cout << vendor << '\n';
 
 	// To determine whether the CPU supports AVX, we call cpuid with eax = 1;
-	__get_cpuid(1, &eax, &ebx, &ecx, &edx);
+	__get_cpuid(/* calling eax = */1, &eax, &ebx, &ecx, &edx);
 	// then ecx contains the relevant information
 	bool fma = (ecx & (1U << 12));
 	bool avx = (ecx & (1U << 28));
@@ -34,7 +34,7 @@ int main() {
 	std::cout << std::format("FMA: {}, AVX: {}\n", fma, avx);
 
 	// To determine for AVX2, we call cpuid with eax=7, ecx=0
-	__get_cpuid_count(7, 0, &eax, &ebx, &ecx, &edx);
+	__get_cpuid_count(/* eax = */7, /* ecx = */0, &eax, &ebx, &ecx, &edx);
 	bool avx2 = (ecx & (1U << 5));
 
 	std::cout << std::format("AVX2: {}\n", avx2);
