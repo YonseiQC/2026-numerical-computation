@@ -51,7 +51,7 @@ BM_sigmoid_omp/16384           7601 ns         7590 ns       107519
 ```
 위의 명령어에서 `./main`앞에 `OMP_NUM_THREADS=8`는 OpenMP가 최대 8개의 쓰레드를 이용하는 것으로 제한합니다.
 
-파일은 `include/sigmoid.hpp`에 선언되고, `src/sigmoid_default.cpp`, `src/sigmoid_avx2.cpp`, `src/sigmoid_omp.cpp` 파일에 정의된 함수들을 실행합니다. 예를 들어 `src/sigmoid_default.cpp`에 정의된 `sigmoid_default` 함수는 다음과 같습니다.
+함수는 `include/sigmoid.hpp`에 선언되고, `src/sigmoid_default.cpp`, `src/sigmoid_avx2.cpp`, `src/sigmoid_omp.cpp` 파일에 정의된 함수들을 실행합니다. 예를 들어 `src/sigmoid_default.cpp`에 정의된 `sigmoid_default` 함수는 다음과 같습니다.
 
 ```cpp
 void sigmoid_default(std::span<double> vec) {
