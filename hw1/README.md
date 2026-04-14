@@ -73,4 +73,4 @@ void sigmoid_default(std::span<double> vec) {
 구현을 위해서 Error function과 `log`함수의 AVX2구현이 필요합니다. 다음 링크를 참고하세요: [Error function 구현](https://www.johndcook.com/blog/cpp_erf/), [SIMD 수학함수 구현 라이브러리리](https://github.com/vectorclass/version2/blob/f4617df57e17efcd754f5bbe0ec87883e0ed9ce6/vectormath_exp.h), [관련 Stackoverflow](https://stackoverflow.com/a/45787548).
 
 ## 제출파일
-2페이지 내의 보고서 및 프로젝트 파일을 압축하여 제출합니다. 프로젝트 파일 압축파일 이름은 `2026-nc-hw1-{학번}.tar`로 해 주세요.
+2페이지 내의 보고서 와 압출된 프로젝트 파일을 제출합니다. 프로젝트 압축파일 이름은 `2026-nc-hw1-{학번}.tar`로 해 주세요.
