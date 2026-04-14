@@ -66,7 +66,7 @@ void sigmoid_default(std::span<double> vec) {
 
 ## 할일
 비슷하게 C++ native, AVX2, OpenMP 버전의 다음 함수를 구현하고 벤치마크를 수행하십시오.
-함수 목록: `Rectified linear unit (ReLU)`$=\max\{0,x\}$, `Gaussian Error Linear Unit (GELU)`$=x(1+\mathrm{erf}(x/\sqrt{2}))/2$, `Softplus`$=\ln(1+e^x)$.
+함수 목록: `Rectified linear unit (ReLU)`$=\max(0,x)$, `Gaussian Error Linear Unit (GELU)`$=x(1+\mathrm{erf}(x/\sqrt{2}))/2$, `Softplus`$=\ln(1+e^x)$.
 
 추가점수 항목: AVX2 구현에 Loop unrolling을 추가하여 더 빨리지는지 확인해 보세요.
 
