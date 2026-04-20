@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(2026-NC-simd)
+project(2026-NC-hw1)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
@@ -48,22 +48,24 @@ else()
     message(STATUS "GBenchmark found.")
 endif()
 
-add_library(MyVector_dot src/MyVector_dot.cpp)
-target_link_libraries(MyVector_dot PRIVATE nc-compile-options)
-target_include_directories(MyVector_dot PUBLIC include/)
+add_library(sigmoid_default src/sigmoid_default.cpp)
+target_link_libraries(sigmoid_default PRIVATE nc-compile-options)
+target_include_directories(sigmoid_default PUBLIC include/)
 
-add_library(MyVector_dot_fma src/MyVector_dot_fma.cpp)
-target_include_directories(MyVector_dot_fma PUBLIC include/)
-target_link_libraries(MyVector_dot_fma PRIVATE nc-compile-options)
-target_compile_options(MyVector_dot_fma PRIVATE -mavx2 -mfma)
+add_library(sigmoid_avx2 src/sigmoid_avx2.cpp)
+target_include_directories(sigmoid_avx2 PUBLIC include/)
+target_link_libraries(sigmoid_avx2 PRIVATE nc-compile-options)
+target_compile_options(sigmoid_avx2 PRIVATE -mavx2 -mfma)
 
-add_library(MyVector INTERFACE)
-target_link_libraries(MyVector INTERFACE MyVector_dot MyVector_dot_fma)
-target_include_directories(MyVector INTERFACE include/)
+add_library(sigmoid_omp src/sigmoid_omp.cpp)
+target_link_libraries(sigmoid_omp PRIVATE nc-compile-options OpenMP::OpenMP_CXX)
+target_include_directories(sigmoid_omp PRIVATE include/)
 
-add_library(matrix_vector_product src/matrix_vector_prod.cpp)
-target_link_libraries(matrix_vector_product PRIVATE nc-compile-options OpenMP::OpenMP_CXX)
-target_include_directories(matrix_vector_product PRIVATE include/)
+add_library(sigmoid INTERFACE)
+target_link_libraries(sigmoid INTERFACE sigmoid_default sigmoid_omp sigmoid_avx2)
 
 add_executable(main src/main.cpp)
-target_link_libraries(main nc-compile-options MyVector matrix_vector_product benchmark::benchmark)
+target_link_libraries(main nc-compile-options sigmoid benchmark::benchmark)
+
+add_executable(test src/test.cpp)
+target_link_libraries(test nc-compile-options sigmoid)

@@ -1,15 +1,14 @@
+#include "MyMatrix.hpp"
 #include "MyVector.hpp"
-
 #include <benchmark/benchmark.h>
 
 #include <list>
-#include <vector>
 #include <random>
-
+#include <vector>
 
 static void BM_dot(benchmark::State& state) {
 	std::default_random_engine re{1557};
-	for (auto _ : state) {
+	for(auto _ : state) {
 		state.PauseTiming();
 		auto vec1 = random_vector(re, state.range(0));
 		auto vec2 = random_vector(re, state.range(0));
@@ -21,7 +20,7 @@ static void BM_dot(benchmark::State& state) {
 
 static void BM_dot_fma(benchmark::State& state) {
 	std::default_random_engine re{1557};
-	for (auto _ : state) {
+	for(auto _ : state) {
 		state.PauseTiming();
 		auto vec1 = random_vector(re, state.range(0));
 		auto vec2 = random_vector(re, state.range(0));
@@ -33,7 +32,7 @@ static void BM_dot_fma(benchmark::State& state) {
 
 static void BM_dot_fma_unroll(benchmark::State& state) {
 	std::default_random_engine re{1557};
-	for (auto _ : state) {
+	for(auto _ : state) {
 		state.PauseTiming();
 		auto vec1 = random_vector(re, state.range(0));
 		auto vec2 = random_vector(re, state.range(0));
@@ -44,9 +43,80 @@ static void BM_dot_fma_unroll(benchmark::State& state) {
 }
 
 // Register the function as a benchmark
-BENCHMARK(BM_dot_fma_unroll)->Arg(1U << 10)->Arg(1U << 12)->Arg(1U << 14)->Arg(1U << 16);
-BENCHMARK(BM_dot_fma)->Arg(1U << 10)->Arg(1U << 12)->Arg(1U << 14)->Arg(1U << 16);
+BENCHMARK(BM_dot_fma_unroll)
+	->Arg(1U << 10)
+	->Arg(1U << 12)
+	->Arg(1U << 14)
+	->Arg(1U << 16);
+BENCHMARK(BM_dot_fma)
+	->Arg(1U << 10)
+	->Arg(1U << 12)
+	->Arg(1U << 14)
+	->Arg(1U << 16);
 BENCHMARK(BM_dot)->Arg(1U << 10)->Arg(1U << 12)->Arg(1U << 14)->Arg(1U << 16);
 
-BENCHMARK_MAIN();
+template<Order order>
+static void BM_matrix_vector_prod(benchmark::State& state) {
+	std::default_random_engine re{1557};
+	for(auto _ : state) {
+		state.PauseTiming();
+		auto mat = random_matrix<order>(re, state.range(0), state.range(0));
+		auto vec = random_vector(re, state.range(0));
+		state.ResumeTiming();
+		auto res = matrix_vector_prod(mat, vec);
+		benchmark::DoNotOptimize(res);
+	}
+}
 
+template<Order order>
+static void BM_matrix_vector_prod_omp1(benchmark::State& state) {
+	std::default_random_engine re{1557};
+	for(auto _ : state) {
+		state.PauseTiming();
+		auto mat = random_matrix<order>(re, state.range(0), state.range(0));
+		auto vec = random_vector(re, state.range(0));
+		state.ResumeTiming();
+		auto res = matrix_vector_prod_omp1(mat, vec);
+		benchmark::DoNotOptimize(res);
+	}
+}
+
+template<Order order>
+static void BM_matrix_vector_prod_omp2(benchmark::State& state) {
+	std::default_random_engine re{1557};
+	for(auto _ : state) {
+		state.PauseTiming();
+		auto mat = random_matrix<order>(re, state.range(0), state.range(0));
+		auto vec = random_vector(re, state.range(0));
+		state.ResumeTiming();
+		auto res = matrix_vector_prod_omp2(mat, vec);
+		benchmark::DoNotOptimize(res);
+	}
+}
+
+BENCHMARK(BM_matrix_vector_prod<Order::RowMajor>)
+	->Arg(1U << 8)
+	->Arg(1U << 10)
+	->Arg(1U << 12);
+BENCHMARK(BM_matrix_vector_prod<Order::ColMajor>)
+	->Arg(1U << 8)
+	->Arg(1U << 10)
+	->Arg(1U << 12);
+BENCHMARK(BM_matrix_vector_prod_omp1<Order::RowMajor>)
+	->Arg(1U << 8)
+	->Arg(1U << 10)
+	->Arg(1U << 12);
+BENCHMARK(BM_matrix_vector_prod_omp1<Order::ColMajor>)
+	->Arg(1U << 8)
+	->Arg(1U << 10)
+	->Arg(1U << 12);
+BENCHMARK(BM_matrix_vector_prod_omp2<Order::RowMajor>)
+	->Arg(1U << 8)
+	->Arg(1U << 10)
+	->Arg(1U << 12);
+BENCHMARK(BM_matrix_vector_prod_omp2<Order::ColMajor>)
+	->Arg(1U << 8)
+	->Arg(1U << 10)
+	->Arg(1U << 12);
+
+BENCHMARK_MAIN();
