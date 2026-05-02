@@ -1,0 +1,2 @@
+nanobind
+mpi4py @ git+https://github.com/mpi4py/mpi4py@4.1.1
